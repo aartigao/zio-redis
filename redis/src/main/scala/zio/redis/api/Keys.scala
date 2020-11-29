@@ -217,6 +217,39 @@ trait Keys {
   ): ZIO[RedisExecutor, RedisError, (Long, Chunk[String])] = Scan.run((cursor, pattern, count, `type`))
 
   /**
+   * Returns or stores the elements contained in the list, set or sorted set at key
+   *
+   * @param key Key that holds value of type list, set or sorted set
+   * @param by The optional BY argument pattern to sort by external keys
+   * @param limit The optional LIMIT argument can be used to only get a range of the matching elements. A negative count returns all elements from the offset
+   * @param gets The optional multiple GET arguments to get the actual values instead of their IDs
+   * @param order The optional order [ASC|DESC] argument for returning elements
+   * @param alpha The optional ALPHA argument to sort lexicographically if collection contains string values
+   * @param store The optional STORE argument where the results should be stored (as a list)
+   * @return The number of sorted elements (Either.Right) if store option is present or an array of sorted elements (Either.Left) otherwise
+   */
+  final def sort(
+    key: String,
+    by: Option[By] = None,
+    limit: Option[Limit] = None,
+    gets: List[Get] = List.empty,
+    order: Option[Order] = None,
+    alpha: Boolean = false,
+    store: Option[Store] = None
+  ): ZIO[RedisExecutor, RedisError, Either[Chunk[String], Long]] =
+    Sort.run(
+      (
+        key,
+        by,
+        limit,
+        if (gets.isEmpty) None else Some((gets.head, gets.tail)),
+        order,
+        if (alpha) Some(Alpha) else None,
+        store
+      )
+    )
+
+  /**
    * Alters the last access time of a key(s). A key is ignored if it does not exist.
    *
    * @param key one required key
