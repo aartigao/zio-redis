@@ -26,6 +26,10 @@ object Input {
       Chunk(stringEncode("AGGREGATE"), stringEncode(data.stringify))
   }
 
+  case object AlphaInput extends Input[Alpha] {
+    def encode(data: Alpha): Chunk[RespValue.BulkString] = Chunk.single(stringEncode(data.stringify))
+  }
+
   case object AuthInput extends Input[Auth] {
     def encode(data: Auth): Chunk[RespValue.BulkString] = Chunk(stringEncode("AUTH"), stringEncode(data.password))
   }
@@ -58,6 +62,10 @@ object Input {
       val start = stringEncode(data.start.toString)
       data.end.fold(Chunk.single(start))(end => Chunk(start, stringEncode(end.toString)))
     }
+  }
+
+  case object ByInput extends Input[By] {
+    def encode(data: By): Chunk[RespValue.BulkString] = Chunk(stringEncode("BY"), stringEncode(data.pattern))
   }
 
   case object ChangedInput extends Input[Changed] {
@@ -101,6 +109,10 @@ object Input {
 
   case object FreqInput extends Input[Freq] {
     def encode(data: Freq): Chunk[RespValue.BulkString] = Chunk(stringEncode("FREQ"), stringEncode(data.frequency))
+  }
+
+  case object GetInput extends Input[Get] {
+    def encode(data: Get): Chunk[RespValue.BulkString] = Chunk(stringEncode("GET"), stringEncode(data.pattern))
   }
 
   case object IdleTimeInput extends Input[IdleTime] {

@@ -427,4 +427,19 @@ object Output {
       }
   }
 
+  case object SortOutput extends Output[Either[Chunk[String], Long]] {
+    protected def tryDecode(respValue: RespValue): Either[Chunk[String], Long] =
+      respValue match {
+        case RespValue.Array(values) =>
+          Left(
+            values.map {
+              case s @ RespValue.BulkString(_) => s.asString
+              case other                       => throw ProtocolError(s"$other is not a bulk string")
+            }
+          )
+        case RespValue.Integer(v)    => Right(v)
+        case other                   => throw ProtocolError(s"$other isn't an array nor integer")
+      }
+  }
+
 }

@@ -320,6 +320,21 @@ private[redis] object Keys {
       ScanOutput
     )
 
+  final val Sort =
+    RedisCommand(
+      "SORT",
+      Tuple7(
+        StringInput,
+        OptionalInput(ByInput),
+        OptionalInput(LimitInput),
+        OptionalInput(NonEmptyList(GetInput)),
+        OptionalInput(OrderInput),
+        OptionalInput(AlphaInput),
+        OptionalInput(StoreInput)
+      ),
+      SortOutput
+    )
+
   final val Touch  = RedisCommand("TOUCH", NonEmptyList(StringInput), LongOutput)
   final val Ttl    = RedisCommand("TTL", StringInput, DurationSecondsOutput)
   final val TypeOf = RedisCommand("TYPE", StringInput, TypeOutput)
